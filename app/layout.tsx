@@ -19,7 +19,7 @@ export default function RootLayout({
 }) {
 	return (
 		<html lang="en">
-			<body className="flex p-10 md:ml-20">
+			<body className="p-3 md:flex md:p-10 md:ml-20">
 				<Sidebar />
 				{children}
 			</body>

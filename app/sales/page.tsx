@@ -124,38 +124,42 @@ const Sales = async () => {
 				} = sale.inventory;
 				const total = price * quantity;
 				return (
-					<div key={sale_id} className="flex w-full mb-5">
+					<div key={sale_id} className="flex w-full pb-4 mb-5 border-b">
 						<p className="w-10 translate-y-1">{i + 1} )</p>
-						<div className="flex flex-col w-full gap-2">
-							<div className="flex items-center w-full ">
-								<div className="flex flex-col w-full ">
-									<p className="text-xl font-semibold">{item_name}</p>
-									<p className="text-sm text-stone-500">{id}</p>
+						<div className="flex items-center justify-between w-full">
+							<div className="flex flex-col w-full gap-2">
+								<div className="flex items-center w-full ">
+									<div className="flex flex-col w-full ">
+										<p className="text-xl font-semibold">{item_name}</p>
+										<p className="text-sm text-stone-500">{id}</p>
+									</div>
 								</div>
-								<p className="flex w-full font-medium">Quantity {quantity}</p>
-							</div>
-							{discount && (
-								<p className="px-2 py-1 text-sm text-black bg-green-300 rounded-md w-max">
-									{discount} Discount
+								{discount && (
+									<p className="px-2 py-1 text-sm text-black bg-green-300 rounded-md w-max">
+										{discount} Discount
+									</p>
+								)}
+								{discount && (
+									<p className="text-sm">
+										Original price: ₱ {price.toFixed(2)}
+									</p>
+								)}
+								<p className="font-medium">
+									Total: ₱{" "}
+									{discount
+										? (
+												total -
+												total * (parseInt(discount.toString()) / 100)
+										  ).toFixed(2)
+										: total.toFixed(2)}
 								</p>
-							)}
-							{discount && (
-								<p className="text-sm">Original price: ₱ {price.toFixed(2)}</p>
-							)}
-							<p className="flex w-full font-medium">
-								Total: ₱{" "}
-								{discount
-									? (
-											total -
-											total * (parseInt(discount.toString()) / 100)
-									  ).toFixed(2)
-									: total.toFixed(2)}
-							</p>
+							</div>
+							<p className="font-medium w-[10rem]">Quantity {quantity}</p>
 						</div>
 					</div>
 				);
 			})}
-			<p>Total sales: ₱ {totalSales.toFixed(2)}</p>
+			<p className="mt-10">Total sales: ₱ {totalSales.toFixed(2)}</p>
 		</div>
 	);
 };
