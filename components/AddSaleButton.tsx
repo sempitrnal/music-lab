@@ -21,7 +21,8 @@ import {
 	FormMessage,
 } from "./ui/form";
 
-import { Item } from "@/app/sales/page";
+import { addSale } from "@/actions/actions";
+
 import { Button } from "@/components/ui/button";
 import {
 	Command,
@@ -36,6 +37,8 @@ import {
 	PopoverTrigger,
 } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
+import { Item } from "@/types/types";
+import { Spinner } from "@chakra-ui/react";
 import { useRef, useState } from "react";
 import { Input } from "./ui/input";
 import {
@@ -45,9 +48,6 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "./ui/select";
-import { createClient } from "@supabase/supabase-js";
-import { addSale } from "@/actions/actions";
-import { CircularProgress, Spinner } from "@chakra-ui/react";
 
 export const formSchema = z.object({
 	item: z.string(),
@@ -79,9 +79,10 @@ const AddSaleButton = ({ items }: AddSaleButtonProps) => {
 	console.log(isSubmitting);
 	return (
 		<Dialog>
-			<DialogTrigger className="p-2 text-white transition rounded-md bg-black/90 hover:opacity-90">
-				Add Sale
+			<DialogTrigger asChild className="">
+				<Button className="font-bold">Add Sale</Button>
 			</DialogTrigger>
+
 			<DialogContent>
 				<DialogHeader>
 					<DialogTitle>Add sale ayyeee</DialogTitle>
@@ -114,6 +115,7 @@ const AddSaleButton = ({ items }: AddSaleButtonProps) => {
 										item: "",
 										quantity: "1",
 										discount: undefined,
+										sales_date: new Date(),
 									});
 									setValue("");
 									setCurrentItem(null);

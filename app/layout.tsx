@@ -4,6 +4,8 @@ import "./globals.css";
 import { ChakraProvider } from "@chakra-ui/provider";
 import { ChakraBaseProvider } from "@chakra-ui/react";
 import Sidebar from "@/components/Sidebar";
+import { Providers } from "./providers";
+import { Toaster } from "@/components/ui/toaster";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,8 +22,11 @@ export default function RootLayout({
 	return (
 		<html lang="en">
 			<body className="p-3 md:flex md:p-10 md:ml-20">
-				<Sidebar />
-				{children}
+				<Providers>
+					<Sidebar />
+					<div className="w-full">{children}</div>
+					<Toaster />
+				</Providers>
 			</body>
 		</html>
 	);

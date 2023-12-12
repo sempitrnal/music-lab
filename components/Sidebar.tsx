@@ -1,13 +1,11 @@
+"use client";
 import { Tooltip } from "@chakra-ui/react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { AiOutlineStock } from "react-icons/ai";
 import { PiGuitar } from "react-icons/pi";
-import { headers } from "next/headers";
-import Link from "next/link";
 const Sidebar = () => {
-	const headersList = headers();
-	const domain = headersList.get("host") || "";
-	const fullUrl = headersList.get("referer") || "";
-	const path = fullUrl.replace("http://" + domain, "");
+	const path = usePathname();
 
 	const links = [
 		{
@@ -29,25 +27,29 @@ const Sidebar = () => {
 		>
 			<div className="flex flex-col gap-2">
 				{links.map((link, i) => (
-					<Link href={link.href} className="" key={i}>
-						{" "}
-						<div
-							className={`rounded-md p-1 transition cursor-pointer text-2xl ${
-								link.isActive
-									? "bg-stone-800 text-white"
-									: " text-stone-500 hover:bg-stone-100 "
-							}`}
-						>
-							<Tooltip
-								hasArrow
-								className="p-2 py-1 text-sm bg-white border rounded-lg text-stone-600 "
-								label={link.name}
-								placement="right"
+					<Tooltip
+						bg="white"
+						color="black"
+						border="1px lightgray solid "
+						borderRadius="md"
+						label={link.name}
+						placement="right"
+						className="bg-white"
+						key={i}
+					>
+						<Link href={link.href} className="">
+							{" "}
+							<div
+								className={`rounded-md p-1 transition cursor-pointer text-2xl ${
+									link.isActive
+										? "bg-stone-800 text-white"
+										: " text-stone-500 hover:bg-stone-100 "
+								}`}
 							>
 								{link.icon}
-							</Tooltip>
-						</div>
-					</Link>
+							</div>
+						</Link>
+					</Tooltip>
 				))}
 			</div>
 		</nav>
