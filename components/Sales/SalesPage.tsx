@@ -12,7 +12,7 @@ type SalesPageProps = {
 };
 export type Sales = {
 	id: number;
-	items: Sale[];
+	items: number[];
 	total: number;
 	created_at: string;
 	mode_of_payment: string;

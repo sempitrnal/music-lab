@@ -62,7 +62,7 @@ const ItemsPage = ({ items }: ItemsPageProps) => {
 			.from("sales")
 			.insert({})
 			.select("id");
-		if (status == 201) {
+		if (status == 201 && sales) {
 			cart.map(async (cartItem) => {
 				const {
 					data: sale,
@@ -95,7 +95,7 @@ const ItemsPage = ({ items }: ItemsPageProps) => {
 						),
 						items: data.map((item: Sale) => item.id.toString()),
 					})
-					.eq("id", sales[0]?.id)
+					.eq("id", sales[0].id)
 					.select();
 
 				if (sales_update.status == 200) {
