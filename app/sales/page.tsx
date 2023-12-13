@@ -40,12 +40,11 @@ const Sales = async () => {
 		.from("sales")
 		.select()
 		.eq("sales_date", today)
-		.order("created_at", { ascending: false });
+		.order("created_at", { ascending: true });
 
 	const { data: sale, error: asd2 } = await supabase
 		.from("sale")
 		.select(`*, inventory(name,price, image_url, stocks)`);
-	console.log(today);
 	return (
 		<div>
 			<h1 className="text-[3rem] mb-10">Sales</h1>

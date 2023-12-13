@@ -4,7 +4,7 @@ import { useCartStore } from "@/store/cart";
 import { Item } from "@/types/types";
 import { PopoverClose } from "@radix-ui/react-popover";
 import Image from "next/image";
-import { useRef, useState } from "react";
+import { RefObject, useRef, useState } from "react";
 import { Button } from "../ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { useToast } from "../ui/use-toast";
@@ -18,7 +18,7 @@ const ItemCard = ({ item }: ItemCardProps) => {
 	const [quantity, setQuantity] = useState(1);
 	const { toast } = useToast();
 
-	const popoverClose = useRef(null);
+	const popoverClose: RefObject<HTMLButtonElement> = useRef(null);
 	return (
 		<div key={item.id} className="flex flex-col items-center gap-2">
 			<div className="p-5 rounded-md shadow-md w-[18rem] flex-col flex justify-end h-[20rem] ">
