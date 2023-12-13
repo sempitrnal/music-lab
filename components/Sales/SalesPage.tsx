@@ -46,7 +46,7 @@ const SalesPage = ({ sales, sale }: SalesPageProps) => {
 						const mop = salesItem.mode_of_payment;
 						return (
 							<div className="flex flex-col " key={salesItem.id}>
-								<div className="flex justify-between">
+								<div className="flex items-center justify-between mb-2">
 									<p className="">
 										{new Date(salesItem.created_at).toLocaleTimeString(
 											"ph-PH",
