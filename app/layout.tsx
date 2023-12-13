@@ -21,7 +21,7 @@ export default function RootLayout({
 }) {
 	return (
 		<html lang="en">
-			<body className="p-3 md:flex md:p-10 md:ml-20">
+			<body className="p-3 mt-24 md:mt-0 md:flex md:p-10 md:ml-20">
 				<Providers>
 					<Sidebar />
 					<div className="w-full">{children}</div>

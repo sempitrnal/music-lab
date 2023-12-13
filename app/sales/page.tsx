@@ -4,7 +4,7 @@ import { Sale } from "@/types/types";
 import { createClient } from "@supabase/supabase-js";
 import { TextQuote } from "lucide-react";
 
-export const revalidate = 5;
+export const revalidate = 1;
 
 function getCurrentDateFormatted(): string {
 	const months: string[] = [

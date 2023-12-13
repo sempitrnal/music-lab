@@ -23,9 +23,9 @@ const Sidebar = () => {
 	];
 	return (
 		<nav
-			className={`md:flex hidden justify-center p-5 py-10   fixed left-0 top-0 bottom-0 h-screen w-14 border-r shadow-md`}
+			className={` flex bg-white z-50 justify-center p-5 md:py-10 right-0   fixed left-0 top-0 md:bottom-0 md:h-screen md:w-14 border-r shadow-md `}
 		>
-			<div className="flex flex-col gap-2">
+			<div className="flex flex-row gap-2 md:flex-col">
 				{links.map((link, i) => (
 					<Tooltip
 						bg="white"

@@ -8,12 +8,14 @@ import { RefObject, useRef, useState } from "react";
 import { Button } from "../ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { useToast } from "../ui/use-toast";
+import { ToastAction } from "../ui/toast";
 
 type ItemCardProps = {
 	item: Item;
+	openCart?: () => void;
 };
 
-const ItemCard = ({ item }: ItemCardProps) => {
+const ItemCard = ({ item, openCart }: ItemCardProps) => {
 	const addToCart = useCartStore((state) => state.addToCart);
 	const [quantity, setQuantity] = useState(1);
 	const { toast } = useToast();
@@ -80,10 +82,16 @@ const ItemCard = ({ item }: ItemCardProps) => {
 									onClick={() => {
 										addToCart({ item, quantity });
 										popoverClose?.current?.click();
+
 										toast({
 											title: "Item added to cart",
 											description: (
 												<p className="font-medium">{`${item.name} x ${quantity}`}</p>
+											),
+											action: (
+												<ToastAction altText="open cart" onClick={openCart}>
+													Cart
+												</ToastAction>
 											),
 										});
 									}}

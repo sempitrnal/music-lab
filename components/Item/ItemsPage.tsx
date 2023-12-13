@@ -1,9 +1,11 @@
+/* eslint-disable react/no-unescaped-entities */
 "use client";
 import { Search, ShoppingCartIcon } from "lucide-react";
 import { Input } from "../ui/input";
 
+import { checkout } from "@/actions/actions";
 import { useCartStore } from "@/store/cart";
-import { Item, Sale } from "@/types/types";
+import { Item } from "@/types/types";
 import {
 	Drawer,
 	DrawerBody,
@@ -13,14 +15,15 @@ import {
 	DrawerOverlay,
 	useDisclosure,
 } from "@chakra-ui/react";
-import { createClient } from "@supabase/supabase-js";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import CartItem from "../Cart/CartItem";
-import { Button } from "../ui/button";
-import ItemCard from "./ItemCard";
+import SubmitButton from "../SubmitButton";
+import { ToastAction } from "../ui/toast";
 import { toast } from "../ui/use-toast";
-import supabase from "@/supabase/supabase";
-import { revalidatePath } from "next/cache";
+import ItemCard from "./ItemCard";
+import Select from "react-select";
+import { modeOfPaymentOptions } from "./mop";
 
 type ItemsPageProps = {
 	items: Item[];
@@ -29,11 +32,10 @@ type ItemsPageProps = {
 const ItemsPage = ({ items }: ItemsPageProps) => {
 	const [search, setSearch] = useState<string>("");
 	const [itemsState, setItemsState] = useState<Item[]>([]);
-	const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+	const router = useRouter();
 	const cart = useCartStore((state) => state.cart);
-
+	const [mop, setMop] = useState<string>("cash");
 	const resetCart = useCartStore((state) => state.resetCart);
-
 	useEffect(() => {
 		setItemsState(items);
 	}, [items]);
@@ -55,61 +57,61 @@ const ItemsPage = ({ items }: ItemsPageProps) => {
 
 	const btnRef = useRef();
 
-	const checkout = async () => {
-		setIsSubmitting(true);
+	// const checkout = async () => {
+	// 	setIsSubmitting(true);
 
-		const { data: sales, status } = await supabase
-			.from("sales")
-			.insert({})
-			.select("id");
-		if (status == 201 && sales) {
-			cart.map(async (cartItem) => {
-				const {
-					data: sale,
-					status,
-					error,
-				} = await supabase.from("sale").insert([
-					{
-						sales_id: sales[0]?.id,
-						inventory_item_id: cartItem.item.item_id,
-						quantity: cartItem.quantity,
-						discount: undefined,
-					},
-				]);
-			});
-			const { data, error } = await supabase
-				.from("sale")
-				.select(
-					`*,
-				inventory(id, name, item_id, price, image_url)`
-				)
-				.eq("sales_id", sales[0]?.id);
+	// 	const { data: sales, status } = await supabase
+	// 		.from("sales")
+	// 		.insert({})
+	// 		.select("id");
+	// 	if (status == 201 && sales) {
+	// 		cart.map(async (cartItem) => {
+	// 			const {
+	// 				data: sale,
+	// 				status,
+	// 				error,
+	// 			} = await supabase.from("sale").insert([
+	// 				{
+	// 					sales_id: sales[0]?.id,
+	// 					inventory_item_id: cartItem.item.item_id,
+	// 					quantity: cartItem.quantity,
+	// 					discount: undefined,
+	// 				},
+	// 			]);
+	// 		});
+	// 		const { data, error } = await supabase
+	// 			.from("sale")
+	// 			.select(
+	// 				`*,
+	// 			inventory(id, name, item_id, price, image_url)`
+	// 			)
+	// 			.eq("sales_id", sales[0]?.id);
 
-			if (data) {
-				const sales_update = await supabase
-					.from("sales")
-					.update({
-						total: data.reduce(
-							(total, item) => total + item.quantity * item.inventory.price,
-							0
-						),
-						items: data.map((item: Sale) => item.id.toString()),
-					})
-					.eq("id", sales[0].id)
-					.select();
+	// 		if (data) {
+	// 			const sales_update = await supabase
+	// 				.from("sales")
+	// 				.update({
+	// 					total: data.reduce(
+	// 						(total, item) => total + item.quantity * item.inventory.price,
+	// 						0
+	// 					),
+	// 					items: data.map((item: Sale) => item.id.toString()),
+	// 				})
+	// 				.eq("id", sales[0].id)
+	// 				.select();
 
-				if (sales_update.status == 200) {
-					onClose();
-					resetCart();
-					toast({
-						title: "Checkout successful",
-						description: "Thank you for shopping with us!",
-					});
-					setIsSubmitting(false);
-				}
-			}
-		}
-	};
+	// 			if (sales_update.status == 200) {
+	// 				onClose();
+	// 				resetCart();
+	// 				toast({
+	// 					title: "Checkout successful",
+	// 					description: "Thank you for shopping with us!",
+	// 				});
+	// 				setIsSubmitting(false);
+	// 			}
+	// 		}
+	// 	}
+	// };
 	return (
 		<div>
 			<Drawer size={"md"} isOpen={isOpen} placement="right" onClose={onClose}>
@@ -137,6 +139,16 @@ const ItemsPage = ({ items }: ItemsPageProps) => {
 							</div>
 							{cart.length > 0 && (
 								<div className="flex flex-col">
+									<Select
+										onChange={(e) => {
+											if (e) {
+												setMop(e.value);
+											}
+										}}
+										defaultValue={modeOfPaymentOptions[0]}
+										options={modeOfPaymentOptions}
+									/>
+
 									<div className="flex items-center justify-between">
 										<p>Total</p>
 										<p className="font-bold">
@@ -150,13 +162,32 @@ const ItemsPage = ({ items }: ItemsPageProps) => {
 												.toFixed(2)}
 										</p>
 									</div>
-									<Button
-										onClick={checkout}
-										disabled={isSubmitting}
-										className="mt-10 mb-5 font-bold disabled:cursor-not-allowed"
+									<div className=""></div>
+									<form
+										action={async () => {
+											const status = await checkout(cart, mop);
+											if (status == 201) {
+												onClose();
+												resetCart();
+												toast({
+													title: "Checkout successful",
+													description: "Thank you for shopping with us!",
+													action: (
+														<ToastAction
+															onClick={() => {
+																router.push("/sales");
+															}}
+															altText="sales"
+														>
+															Check sales
+														</ToastAction>
+													),
+												});
+											}
+										}}
 									>
-										{isSubmitting ? "Processing..." : "Checkout"}
-									</Button>
+										<SubmitButton />
+									</form>
 								</div>
 							)}
 						</div>
@@ -189,10 +220,14 @@ const ItemsPage = ({ items }: ItemsPageProps) => {
 				{itemsState && itemsState.length > 0 && search ? (
 					itemsState.map((item) => <ItemCard item={item} key={item.id} />)
 				) : itemsState && itemsState.length === 0 && search ? (
-					<p>No items found</p>
+					<p>
+						No items found for <span className="font-semibold">"{search}"</span>
+					</p>
 				) : (
 					itemsState &&
-					itemsState.map((item) => <ItemCard item={item} key={item.id} />)
+					itemsState.map((item) => (
+						<ItemCard openCart={onOpen} item={item} key={item.id} />
+					))
 				)}
 			</div>
 		</div>

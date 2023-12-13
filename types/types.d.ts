@@ -1,6 +1,6 @@
 export enum Discount {
-	Five,
-	Ten,
+	"5%",
+	"10%",
 }
 export type Sale = {
 	id: number;
@@ -10,6 +10,7 @@ export type Sale = {
 	sales_date: string;
 	discount: Discount;
 	inventory: Item;
+	sales_id: number;
 };
 export type Item = {
 	id: number;

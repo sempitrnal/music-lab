@@ -1,10 +1,27 @@
 "use client";
 
-import supabase from "@/supabase/supabase";
 import { Sale } from "@/types/types";
 import { Tooltip } from "@chakra-ui/react";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+enum Discount {
+	"5%",
+	"10%",
+}
+function calculateTotalSaleAmount(sales: Sale[]): number {
+	let totalAmount = 0;
+
+	for (const sale of sales) {
+		const itemPrice = sale.inventory.price; // Replace 'price' with the actual property name
+		const discountPercentage = parseInt(sale.discount?.toString()) / 100 || 0;
+
+		const discountedPrice = itemPrice * (1 - discountPercentage);
+		const saleAmount = discountedPrice * sale.quantity;
+
+		totalAmount += saleAmount;
+	}
+
+	return totalAmount;
+}
 
 type SalesPageProps = {
 	sales: Sales[];
@@ -12,55 +29,57 @@ type SalesPageProps = {
 };
 export type Sales = {
 	id: number;
-	items: number[];
-	total: number;
 	created_at: string;
 	mode_of_payment: string;
 };
 const SalesPage = ({ sales, sale }: SalesPageProps) => {
-	const [items, setItems] = useState<any>(null);
-	const [salesItems, setSalesItems] = useState<Sales[]>();
-	const [saleItems, setSaleItems] = useState<Sale[] | null>(null);
-
-	useEffect(() => {
-		if (sales) {
-			setSalesItems(sales);
-			setSaleItems(sale);
-		}
-	}, [sales]);
-
-	if (salesItems === null || saleItems === null) {
+	if (!sales) {
 		return <div>Loading...</div>;
 	} else
 		return (
 			<>
-				<div className="flex flex-col gap-3 w-[25rem]">
-					{sales?.map((sale, i) => {
-						const items = saleItems?.filter((item) =>
-							sale.items.includes(item.id)
-						);
-
+				<div className="flex flex-col gap-10 w-full md:w-[30rem]">
+					{sales?.map((salesItem, i) => {
+						const items = sale.filter((item) => {
+							return salesItem.id === item.sales_id;
+						});
+						const mop = salesItem.mode_of_payment;
 						return (
-							<div className="flex flex-col " key={sale.id}>
+							<div className="flex flex-col " key={salesItem.id}>
 								<div className="flex justify-between">
 									<p className="">
-										{new Date(sale.created_at).toLocaleTimeString("ph-PH", {
-											hour: "2-digit",
-											minute: "2-digit",
-											hour12: true,
-										})}
+										{new Date(salesItem.created_at).toLocaleTimeString(
+											"ph-PH",
+											{
+												hour: "2-digit",
+												minute: "2-digit",
+												hour12: true,
+											}
+										)}
 									</p>
 									<Tooltip
 										bg="white"
 										color="black"
 										border="1px lightgray solid "
 										borderRadius="md"
-										label={`paid via ${sale.mode_of_payment}`}
+										label={`paid via ${salesItem.mode_of_payment}`}
 										placement="right"
 										className="bg-white "
 									>
 										<Image
-											src="/maya.svg"
+											src={
+												mop === "cash"
+													? "/cash.png"
+													: mop === "gcash"
+													? "/gcash.svg"
+													: mop === "mastercard"
+													? "/mc.svg"
+													: mop === "visa"
+													? "/visa.svg"
+													: mop === "paymaya"
+													? "/maya.svg"
+													: "/cash.png"
+											}
 											width={50}
 											height={50}
 											alt="hello"
@@ -89,7 +108,7 @@ const SalesPage = ({ sales, sale }: SalesPageProps) => {
 										})}
 										<div className="flex justify-between ">
 											<p className="font-bold">Total</p>
-											<p>₱ {sale.total}</p>
+											<p>₱ {calculateTotalSaleAmount(items).toFixed(2)}</p>
 										</div>
 									</div>
 								</div>
